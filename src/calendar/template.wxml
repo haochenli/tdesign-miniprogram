@@ -22,12 +22,16 @@
     <view wx:for="{{days}}" wx:key="index" class="{{classPrefix}}__days-item">{{ item }}</view>
   </view>
   <scroll-view
+    id="callendar-scroll-view"
     class="{{classPrefix}}__months"
     scroll-into-view="{{scrollIntoView}}"
+    scroll-top="{{scrollTopHeight}}"
+    bind:scroll="bindScroll"
     scroll-y
     enhanced
     show-scrollbar="{{false}}"
   >
+    <view class="before_item_view" style="height: {{offSetHeight}}px"></view>
     <block wx:for="{{months}}" wx:key="index">
       <view class="{{classPrefix}}__month" id="year_{{item.year}}_month_{{item.month}}"
         >{{ item.year }} 年 {{ item.month + 1 }} 月</view

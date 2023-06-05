@@ -4,14 +4,5 @@
 
   <t-demo title="01 组件类型" desc="">
     <base />
-    <multiple />
-    <range />
-  </t-demo>
-
-  <t-demo title="02 组件样式" desc="可自由定义想要的风格">
-    <custom-text />
-    <custom-range />
-    <custom-button />
-    <without-popup />
   </t-demo>
 </view>

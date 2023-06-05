@@ -2,6 +2,8 @@ Component({
   data: {
     visible: false,
     note: '',
+    minDate: new Date(1900, 1, 1).getTime(),
+    maxDate: new Date(2022, 2, 15).getTime(),
   },
   methods: {
     handleCalendar() {

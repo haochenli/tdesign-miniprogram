@@ -26,6 +26,8 @@ export default class Calendar extends SuperComponent {
     months: [],
     scrollIntoView: '',
     innerConfirmBtn: { content: '确定' },
+    offSetHeight: 0,
+    scrollTopHeight: 0,
   };
 
   controlledProps = [
@@ -49,7 +51,6 @@ export default class Calendar extends SuperComponent {
         days: this.base.getDays(),
       });
       this.calcMonths();
-
       if (!this.data.usePopup) {
         this.scrollIntoView();
       }
@@ -78,6 +79,7 @@ export default class Calendar extends SuperComponent {
     },
     visible(v) {
       if (v) {
+        this.base.getScrollViewHeight(this);
         this.scrollIntoView();
         this.base.value = this.data.value;
         this.calcMonths();
@@ -93,6 +95,28 @@ export default class Calendar extends SuperComponent {
   };
 
   methods = {
+    bindScroll(e) {
+      const { offSetHeight, monthsInView } = this.base.getCurrentScrollIdx(e.detail.scrollTop, e.detail.deltaY);
+      if (this.data.offSetHeight < offSetHeight) {
+        this.setData({
+          scrollTopHeight: offSetHeight,
+          offSetHeight: offSetHeight,
+          months: monthsInView,
+        });
+      } else if (this.data.offSetHeight > offSetHeight) {
+        this.setData({
+          offSetHeight: offSetHeight,
+          months: monthsInView,
+        });
+      }
+      // const { offSetHeight, monthsInView } = this.base.getMonthInView(e.detail.scrollTop, this)
+      // if(+offSetHeight !== +this.data.offSetHeight) {
+      //   this.setData({
+      //     offSetHeight: offSetHeight,
+      //     months: monthsInView
+      //   })
+      // }
+    },
     initialValue() {
       const { value, type, minDate } = this.data;
 
@@ -126,10 +150,15 @@ export default class Calendar extends SuperComponent {
     },
     calcMonths() {
       const months = this.base.getMonths();
-
-      this.setData({
-        months,
-      });
+      if (this.data.offSetHeight === 0) {
+        this.setData({
+          months: months.slice(0, 3),
+        });
+      } else {
+        this.setData({
+          months,
+        });
+      }
     },
     close(trigger) {
       if (this.data.autoClose) {

@@ -7,6 +7,8 @@ export default class TCalendar {
   type: TCalendarType = 'single';
   minDate: Date;
   maxDate: Date;
+  scrollViewHeight: number; // scrollView的高度
+  months: any[];
   format: (day: TDate) => TDate;
 
   constructor(options = {}) {
@@ -45,6 +47,49 @@ export default class TCalendar {
     }
 
     return ans;
+  }
+
+  getMonthInView(currentHeight: number, instance) {
+    const currentMonth = Math.floor(currentHeight / this.scrollViewHeight);
+    if (currentMonth === 0 || currentMonth === 1) {
+      return {
+        offSetHeight: 0,
+        monthsInView: this.months.slice(0, 3),
+      };
+    } else {
+      const monthsInView = this.months.slice(currentMonth, currentMonth + 3);
+      console.log('@@monthsInView', monthsInView);
+      const offSetHeight = Math.floor(currentHeight / this.scrollViewHeight) * this.scrollViewHeight;
+      return {
+        offSetHeight,
+        monthsInView,
+      };
+    }
+  }
+  async getScrollViewHeight() {
+    const info = await wx.getSystemInfo();
+    const { windowHeight } = info;
+    this.scrollViewHeight = windowHeight * 0.6; // 0.6 came from 'height: 60vh' of scrollview
+  }
+
+  getCurrentScrollIdx(offSetHeight: number, delta: number) {
+    // let startIdx;
+    // if( delta <= 0 ) {
+    let startIdx = Math.floor(offSetHeight / this.scrollViewHeight);
+    // } else {
+    //   startIdx = Math.ceil(offSetHeight / this.scrollViewHeight);
+    // }
+
+    // const startIdx = Math.floor(offSetHeight / this.scrollViewHeight);
+    console.log('offSetHeight!!', offSetHeight);
+    console.log('startIdx!!', startIdx);
+
+    const endIdx = startIdx + 3;
+    const monthsInView = this.months.slice(startIdx, endIdx);
+    return {
+      offSetHeight: startIdx * this.scrollViewHeight,
+      monthsInView: monthsInView,
+    };
   }
 
   getMonths() {
@@ -105,7 +150,7 @@ export default class TCalendar {
       minYear = curDate.year;
       minMonth = curDate.month;
     }
-
+    this.months = ans;
     return ans;
   }
 
